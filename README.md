@@ -1,4 +1,17 @@
-# OhmWave
+<p align="center">
+  <img src="img/OhmWaveLogo.png" alt="OhmWave Logo" width="250" />
+</p>
+
+<h1 align="center" style="color: #2A835F;">OhmWave</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+" />
+  <img src="https://img.shields.io/badge/Flask-API-000000?style=flat-square&logo=flask&logoColor=white" alt="Flask" />
+  <img src="https://img.shields.io/badge/React-UI-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/Node.js-v18+-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/FFmpeg-Audio-007808?style=flat-square&logo=ffmpeg&logoColor=white" alt="FFmpeg" />
+  <img src="https://img.shields.io/badge/yt--dlp-Scraper-FF0000?style=flat-square" alt="yt-dlp" />
+</p>
 
 OhmWave is a local music search and downloader built around YouTube Music. It provides both a Flask web application and a command-line interface for searching by artist, album, genre, or track, downloading audio, embedding metadata, and managing a local music library.
 
