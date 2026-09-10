@@ -1,6 +1,6 @@
-# SoundScrape
+# OhmWave
 
-SoundScrape is a local music search and downloader built around YouTube Music. It provides both a Flask web application and a command-line interface for searching by artist, album, genre, or track, downloading audio, embedding metadata, and managing a local music library.
+OhmWave is a local music search and downloader built around YouTube Music. It provides both a Flask web application and a command-line interface for searching by artist, album, genre, or track, downloading audio, embedding metadata, and managing a local music library.
 
 ## Features
 
