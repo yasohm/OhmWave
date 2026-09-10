@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundScrape - Frutiger Aero YouTube Music Scraper</title>
+    <meta name="description"
+        content="Frutiger Aero Glassmorphism YouTube Music Scraper & Player with high-speed parallel downloads and ID3 metadata tagging.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="frutiger-aero-body">
+
+    <div class="aero-app-container">
+
+        <!-- Left Glass Sidebar -->
+        <aside class="aero-sidebar">
+
+            <!-- Logo -->
+            <div class="aero-logo">
+                <div class="aero-logo-icon">
+                    <i class="fa-brands fa-spotify"></i>
+                </div>
+                <span class="aero-logo-text">SoundScrape</span>
+            </div>
+
+            <!-- Main Navigation -->
+            <nav class="aero-nav-group">
+                <button class="aero-nav-btn active" id="nav-home" data-tab="search-tab">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home & Search</span>
+                </button>
+
+                <button class="aero-nav-btn" id="nav-library" data-tab="library-tab">
+                    <i class="fa-solid fa-lines-leaning"></i>
+                    <span>Your Library</span>
+                    <span class="aero-badge-pill" id="lib-count-badge">0</span>
+                </button>
+            </nav>
+
+            <!-- Category Filter Pills inside Sidebar -->
+            <div class="aero-section-header">
+                <span>SEARCH FILTER</span>
+            </div>
+            <div class="aero-filter-pills">
+                <button class="filter-pill active" data-category="artist">
+                    <i class="fa-solid fa-user"></i> Artist
+                </button>
+                <button class="filter-pill" data-category="album">
+                    <i class="fa-solid fa-compact-disc"></i> Album
+                </button>
+                <button class="filter-pill" data-category="genre">
+                    <i class="fa-solid fa-guitar"></i> Genre
+                </button>
+                <button class="filter-pill" data-category="track">
+                    <i class="fa-solid fa-music"></i> Track
+                </button>
+            </div>
+
+            <!-- Settings / Quality Preset Card -->
+            <div class="aero-spec-widget">
+                <div class="widget-title">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>AUDIO ENGINE SPECS</span>
+                </div>
+
+                <div class="widget-field">
+                    <label>Format</label>
+                    <select id="aero-format-select" class="aero-select">
+                        <option value="mp3" selected>MP3 (Universal 320k)</option>
+                        <option value="flac">FLAC (Lossless Audio)</option>
+                        <option value="m4a">M4A (AAC Audio)</option>
+                        <option value="opus">OPUS (High Speed)</option>
+                    </select>
+                </div>
+
+                <div class="widget-field">
+                    <label>Bitrate</label>
+                    <select id="aero-quality-select" class="aero-select">
+                        <option value="320" selected>320 kbps (Extreme Quality)</option>
+                        <option value="256">256 kbps (High Quality)</option>
+                        <option value="192">192 kbps (Standard)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Playlists Section (Inspired by uploaded image) -->
+            <div class="aero-section-header">
+                <span>PLAYLISTS & PRESETS</span>
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <div class="aero-playlist-list">
+                <div class="playlist-item" onclick="quickSearch('artist', 'Rihanna')">
+                    <div class="playlist-icon icon-purple"><i class="fa-solid fa-heart"></i></div>
+                    <div class="playlist-info">
+                        <span class="playlist-name">Liked Songs</span>
+                        <span class="playlist-sub">Playlist • 1,338 songs</span>
+                    </div>
+                </div>
+
+                <div class="playlist-item" onclick="quickSearch('album', 'A Girl Like Me')">
+                    <div class="playlist-icon icon-cyan"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div class="playlist-info">
+                        <span class="playlist-name">Discover Weekly</span>
+                        <span class="playlist-sub">Playlist • SoundScrape</span>
+                    </div>
+                </div>
+
+                <div class="playlist-item" onclick="quickSearch('genre', 'Chill Vibes')">
+                    <div class="playlist-icon icon-blue"><i class="fa-solid fa-cloud-sun"></i></div>
+                    <div class="playlist-info">
+                        <span class="playlist-name">Chill Vibes</span>
+                        <span class="playlist-sub">Playlist • oceanic</span>
+                    </div>
+                </div>
+
+                <div class="playlist-item" onclick="quickSearch('genre', 'Synthwave')">
+                    <div class="playlist-icon icon-green"><i class="fa-solid fa-leaf"></i></div>
+                    <div class="playlist-info">
+                        <span class="playlist-name">Focus Flow</span>
+                        <span class="playlist-sub">Playlist • Spotify</span>
+                    </div>
+                </div>
+
+                <div class="playlist-item" onclick="quickSearch('artist', 'Daft Punk')">
+                    <div class="playlist-icon icon-orange"><i class="fa-solid fa-car"></i></div>
+                    <div class="playlist-info">
+                        <span class="playlist-name">Summer Drive</span>
+                        <span class="playlist-sub">Playlist • oceanic</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="aero-main-content">
+
+            <!-- Top Glossy Search Header -->
+            <header class="aero-header-bar">
+                <div class="nav-arrows">
+                    <button class="arrow-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="arrow-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+                <!-- Glass Search Form -->
+                <form id="search-form" class="aero-search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="What do you want to play or scrape?" required
+                        autocomplete="off">
+                    <button type="submit" class="aero-submit-btn" id="btn-search">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </button>
+                </form>
+
+                <div class="aero-user-profile">
+                    <button class="aero-pill-btn"><i class="fa-solid fa-sparkles"></i> Upgrade</button>
+                    <button class="aero-icon-btn"><i class="fa-regular fa-bell"></i></button>
+                    <div class="user-avatar-pill">
+                        <img src="/static/img/default-art.png" alt="User Avatar">
+                        <span>oceanic</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: Search & Scrape Results -->
+            <section id="search-tab" class="aero-tab-content active">
+
+                <!-- Hero Album Glass Card (Matching uploaded reference image) -->
+                <div id="hero-banner" class="aero-hero-card">
+                    <div class="hero-cover-frame">
+                        <img id="hero-cover-img" src="/static/img/default-art.png" alt="Album Cover">
+                    </div>
+                    <div class="hero-details">
+                        <span class="hero-type-label" id="hero-type-label">Album / Artist</span>
+                        <h1 class="hero-title" id="hero-title">A Girl Like Me</h1>
+                        <div class="hero-sub-row">
+                            <span class="hero-artist-name" id="hero-artist-name">Rihanna</span>
+                            <span class="dot-sep">•</span>
+                            <span id="hero-meta-info">2006 • 12 songs, 45 min 47 sec</span>
+                        </div>
+
+                        <div class="hero-action-row">
+                            <button id="btn-hero-play" class="aero-big-play-btn" title="Play / Download All">
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                            <button id="btn-hero-select-all" class="aero-glass-btn" title="Select All Tracks">
+                                <i class="fa-solid fa-plus"></i> Select All
+                            </button>
+                            <button id="btn-hero-download-all" class="aero-glass-btn btn-green-glow" disabled>
+                                <i class="fa-solid fa-arrow-down"></i> Download Selected (<span
+                                    id="selected-count">0</span>)
+                            </button>
+                            <button class="aero-glass-btn icon-only"><i class="fa-solid fa-ellipsis"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loader Container -->
+                <div id="search-loader" class="aero-loader-box hidden">
+                    <div class="aero-spinner"></div>
+                    <p id="loader-text">Fetching YouTube Music audio streams...</p>
+                </div>
+
+                <!-- Tracklist Table Container (Aero Glass Table) -->
+                <div id="results-table-container" class="aero-table-wrapper">
+                    <table class="aero-track-table">
+                        <thead>
+                            <tr>
+                                <th class="col-check"><input type="checkbox" id="master-checkbox"></th>
+                                <th class="col-num">#</th>
+                                <th class="col-title">Title</th>
+                                <th class="col-album">Album / Artist</th>
+                                <th class="col-duration"><i class="fa-regular fa-clock"></i></th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                            <!-- Dynamically populated rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <!-- TAB 2: Music Library -->
+            <section id="library-tab" class="aero-tab-content">
+                <div class="aero-library-header">
+                    <div>
+                        <h2>Your Downloaded Library</h2>
+                        <p>High-quality MP3 / FLAC tracks saved in your <code>./downloads</code> folder.</p>
+                    </div>
+                    <button id="btn-refresh-library" class="aero-glass-btn">
+                        <i class="fa-solid fa-rotate"></i> Refresh Library
+                    </button>
+                </div>
+
+                <div id="library-tbody-container" class="aero-table-wrapper">
+                    <table class="aero-track-table">
+                        <thead>
+                            <tr>
+                                <th class="col-num">#</th>
+                                <th class="col-title">Track Name</th>
+                                <th class="col-album">Artist / Folder</th>
+                                <th class="col-duration">Size & Format</th>
+                                <th class="col-action">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="library-tbody">
+                            <!-- Dynamically populated library rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Bottom Frutiger Aero Player Bar (Matching reference image) -->
+    <footer id="audio-player-bar" class="aero-player-bar hidden">
+        <div class="player-left-info">
+            <img id="player-thumb" src="/static/img/default-art.png" alt="Cover Thumbnail">
+            <div class="player-text">
+                <h4 id="player-title">We Ride</h4>
+                <p id="player-artist">Rihanna</p>
+            </div>
+            <button class="player-mini-icon active"><i class="fa-solid fa-circle-check"></i></button>
+            <button class="player-mini-icon"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <div class="player-center-controls">
+            <div class="control-btns">
+                <button id="player-shuffle" class="control-btn"><i class="fa-solid fa-shuffle"></i></button>
+                <button id="player-prev" class="control-btn"><i class="fa-solid fa-backward-step"></i></button>
+                <button id="player-play" class="control-btn play-circle-btn"><i class="fa-solid fa-play"></i></button>
+                <button id="player-next" class="control-btn"><i class="fa-solid fa-forward-step"></i></button>
+                <button id="player-repeat" class="control-btn"><i class="fa-solid fa-repeat"></i></button>
+            </div>
+
+            <div class="scrubber-row">
+                <span id="player-current-time" class="time-label">0:42</span>
+                <div class="aero-slider-container">
+                    <input type="range" id="player-seek" min="0" max="100" value="0">
+                </div>
+                <span id="player-total-time" class="time-label">3:56</span>
+            </div>
+        </div>
+
+        <div class="player-right-actions">
+            <button class="control-btn"><i class="fa-solid fa-bars-staggered"></i></button>
+            <button class="control-btn"><i class="fa-solid fa-desktop"></i></button>
+            <div class="volume-box">
+                <i id="volume-icon" class="fa-solid fa-volume-high"></i>
+                <input type="range" id="player-volume" min="0" max="1" step="0.05" value="0.8">
+            </div>
+            <button class="control-btn"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+        </div>
+
+        <audio id="html5-audio-element"></audio>
+    </footer>
+
+    <!-- Aero Glass Download Modal -->
+    <div id="download-modal" class="aero-modal-backdrop hidden">
+        <div class="aero-modal-card">
+            <div class="aero-modal-header">
+                <div class="modal-title-group">
+                    <i class="fa-solid fa-circle-down fa-spin" style="--fa-animation-duration: 4s; color: #7cf03d;"></i>
+                    <h3>Downloading Audio Tracks</h3>
+                </div>
+                <button id="btn-close-modal" class="aero-close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="aero-modal-body">
+                <div class="modal-status-bar">
+                    <span id="modal-status-text">Parallel Engine Active...</span>
+                    <span id="modal-track-count" class="aero-pill-badge">0 / 0</span>
+                </div>
+
+                <div class="aero-progress-track">
+                    <div id="modal-progress-fill" class="aero-progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <p id="modal-current-track" class="modal-current-name">Fetching audio streams...</p>
+
+                <div id="modal-completed-list" class="modal-items-list">
+                    <!-- Downloaded items list -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>
