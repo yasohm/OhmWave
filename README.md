@@ -1,64 +1,83 @@
 <p align="center">
-  <img src="img/OhmWaveLogo.png" alt="OhmWave Logo" width="250" style="margin: -10px 0;" />
+  <img src="img/OhmWaveLogo.png" alt="OhmWave Logo" width="250" />
 </p>
 
-<h1 align="center" style="color: #2A835F;">OhmWave</h1>
+<h1 align="center">OhmWave</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+" />
-  <img src="https://img.shields.io/badge/Flask-API-000000?style=flat-square&logo=flask&logoColor=white" alt="Flask" />
-  <img src="https://img.shields.io/badge/React-UI-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/Node.js-v18+-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/FFmpeg-Audio-007808?style=flat-square&logo=ffmpeg&logoColor=white" alt="FFmpeg" />
-  <img src="https://img.shields.io/badge/yt--dlp-Scraper-FF0000?style=flat-square" alt="yt-dlp" />
+  Local music search, downloads, playback, and recommendations powered by YouTube Music.
 </p>
 
-OhmWave is a local music search and downloader built around YouTube Music. It provides both a Flask web application and a command-line interface for searching by artist, album, genre, or track, downloading audio, embedding metadata, and managing a local music library.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.9 or later" />
+  <img src="https://img.shields.io/badge/Flask-API-000000?style=flat-square&logo=flask&logoColor=white" alt="Flask API" />
+  <img src="https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React and Vite" />
+  <img src="https://img.shields.io/badge/Capacitor-Mobile-119EFF?style=flat-square&logo=capacitor&logoColor=white" alt="Capacitor mobile client" />
+  <img src="https://img.shields.io/badge/yt--dlp-Audio-FF0000?style=flat-square" alt="yt-dlp" />
+</p>
 
-## Features
+OhmWave is a local-first music application. Search YouTube Music by track, artist, album, or genre; download selected results to a managed local library; and stream or manage the resulting files from the web interface. The repository also contains an interactive CLI and a Capacitor client for Android and iOS.
 
-- Search YouTube Music by artist, album, genre, or general track query.
-- Download audio as MP3, M4A, FLAC, WAV, or Opus.
-- Select audio quality up to 320 kbps where supported by the source.
-- Embed title, artist, album, year, and downloaded cover art into supported formats.
-- Organize downloads by artist and album.
-- View, stream, download, and delete files from the local library.
-- Track multi-file download progress in the web interface.
-- Use the interactive CLI or scripted command-line options.
-- Fall back to `yt-dlp` search when the YouTube Music API lookup fails.
+> **Responsible use:** You are responsible for complying with YouTube's terms, copyright law, and all applicable local regulations. This project is intended for local, personal use.
 
-## Project structure
+## Highlights
+
+- Search tracks, artists, albums, and genres through YouTube Music, with a `yt-dlp` search fallback.
+- Download one or multiple tracks concurrently as MP3, M4A, FLAC, WAV, or Opus.
+- Select 320, 256, 192, or 128 kbps conversion quality where the source and codec support it.
+- Embed title, artist, album, year, and cover art in MP3, M4A, and FLAC downloads.
+- Store downloads in artist and album folders; browse, stream, save, and delete them from the library.
+- Track asynchronous download jobs and progress in the UI.
+- Use the same backend from a React web client, Capacitor mobile app, or terminal.
+- Record listening events and likes in SQLite, with optional ALS-based recommendations and a popular-track fallback.
+
+## Architecture
+
+```text
+React + Vite web client ─┐
+Capacitor Android/iOS ───┼──> Flask API ──> YouTube Music / yt-dlp / FFmpeg
+Interactive CLI ─────────┘       │
+                                  ├── downloads/        local audio library
+                                  └── ohmwave.db        interactions and likes
+```
+
+## Project layout
 
 ```text
 .
-├── app.py                 # Flask web server and JSON API
-├── cli.py                 # Command-line and interactive interface
-├── yt_music_scraper.py    # Search, download, conversion, and metadata logic
-├── frontend/              # React + Vite frontend source and build output
-├── templates/             # Flask fallback HTML template
-├── static/                # Legacy/static frontend assets
-├── bin/                   # Local ffmpeg and ffprobe binaries
-└── downloads/             # Local music library (generated at runtime)
+├── app.py                       # Flask server and JSON API
+├── cli.py                       # Interactive and scripted command-line client
+├── yt_music_scraper.py          # Search, download, conversion, and tagging
+├── recommendation_service.py    # SQLite events plus optional implicit ALS model
+├── requirements-recommendations.txt
+├── frontend/                    # React, Vite, and Capacitor application
+├── templates/                   # HTML fallback when the React app is not built
+├── static/                      # Assets used by the fallback interface
+├── bin/                         # Bundled ffmpeg and ffprobe binaries
+├── models/                      # Persisted recommendation model (if trained)
+└── downloads/                   # Generated local music library (gitignored)
 ```
 
-## Requirements
+## Prerequisites
 
-- Python 3.9 or newer
-- Node.js and npm for frontend development/builds
-- FFmpeg and FFprobe (the project currently includes binaries in `bin/`)
+- Python 3.9 or later
+- Node.js 20.19 or later (or 22.12 or later) and npm, matching Vite 8's supported engines
+- FFmpeg and FFprobe. Bundled binaries are used when available; otherwise install both on your `PATH`.
 - Network access to YouTube and YouTube Music
 
-The Python application imports these packages:
+For native builds, also install the platform tooling required by Capacitor: Android Studio for Android and Xcode/CocoaPods on macOS for iOS.
+
+## Quick start: web application
+
+From the repository root, create an isolated Python environment and install the backend dependencies:
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install flask requests ytmusicapi yt-dlp mutagen
 ```
 
-The frontend dependencies are defined in [`frontend/package.json`](frontend/package.json).
-
-## Web application
-
-Install the frontend dependencies and build the React interface:
+Install and build the frontend:
 
 ```bash
 cd frontend
@@ -67,77 +86,156 @@ npm run build
 cd ..
 ```
 
-Start the Flask server from the project root:
+Start the API and web server:
 
 ```bash
 python app.py
 ```
 
-Then open <http://localhost:5000>. The server serves `frontend/dist/index.html` when the frontend has been built; otherwise it falls back to `templates/index.html`.
+Open <http://localhost:5000>. Flask serves `frontend/dist/index.html` when it exists; before a frontend build, it serves the fallback template in `templates/index.html`.
 
-For frontend development, run Vite in a separate terminal:
+### Frontend development
+
+Run Flask and Vite in separate terminals. Vite runs on <http://localhost:5173> and proxies `/api` requests to Flask at `http://127.0.0.1:5000`.
 
 ```bash
+# Terminal 1, from the repository root
+source .venv/bin/activate
+python app.py
+
+# Terminal 2
 cd frontend
 npm run dev
 ```
 
-## Command-line usage
-
-Run the interactive menu:
+Useful frontend commands:
 
 ```bash
-python cli.py --interactive
+npm run build        # Create frontend/dist for Flask to serve
+npm run lint         # Run Oxlint
+npm run preview      # Preview a production build
 ```
 
-Search for an artist and interactively select tracks:
+## Mobile client
+
+The Capacitor project is located in `frontend/`. Build the web bundle and synchronize it into the native projects:
+
+```bash
+cd frontend
+npm install
+npm run mobile:sync
+```
+
+Then open a native project:
+
+```bash
+npm run android
+# or, on macOS
+npm run ios
+```
+
+The browser client defaults to same-origin API requests. For a native device, set `VITE_API_URL` to the reachable address of the machine running Flask before building, for example:
+
+```bash
+VITE_API_URL=http://192.168.1.10:5000 npm run mobile:sync
+```
+
+The Flask server enables CORS for the Capacitor client. Ensure the device and server can reach one another; do not use `127.0.0.1` as the API host on a physical device.
+
+## Command-line client
+
+Running the CLI without a search option opens its interactive menu:
+
+```bash
+python cli.py
+```
+
+You can also issue a search directly and choose tracks interactively:
 
 ```bash
 python cli.py --artist "Rihanna"
 ```
 
-Download every result for an album as FLAC:
+Or download every result without a selection prompt:
 
 ```bash
 python cli.py --album "Album Name" --download-all --format flac
 ```
 
-Other supported options include:
+| Option | Description |
+| --- | --- |
+| `-a`, `--artist` | Search by artist name |
+| `-l`, `--album` | Search by album name |
+| `-g`, `--genre` | Search by genre |
+| `-q`, `--query` | General track query |
+| `-f`, `--format` | `mp3`, `m4a`, `flac`, `wav`, or `opus` (default: `mp3`) |
+| `-k`, `--quality` | `320`, `256`, `192`, or `128` (default: `320`) |
+| `--limit` | Maximum search results (default: `10`) |
+| `--download-all` | Download every returned track |
+| `-o`, `--output` | Download directory (default: `downloads`) |
+| `-i`, `--interactive` | Explicitly open the interactive menu |
 
-```text
--a, --artist       Search by artist
--l, --album        Search by album
--g, --genre        Search by genre
--q, --query        General track search
--f, --format       mp3, m4a, flac, wav, or opus
--k, --quality      320, 256, 192, or 128 kbps
---limit            Maximum number of search results
---download-all     Download all search results
--o, --output       Download directory
--i, --interactive  Launch the interactive menu
-```
+## API reference
 
-## API routes
-
-The Flask application exposes these routes for the web frontend:
+The Flask API is local and currently has no authentication. Request and response validation should be added before exposing it beyond a trusted network.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `POST` | `/api/search` | Search by track, artist, album, or genre |
-| `GET` | `/api/album/<browse_id>` | Get tracks for an album |
-| `POST` | `/api/download` | Start an asynchronous download job |
-| `GET` | `/api/download/status/<job_id>` | Read download progress and results |
-| `GET` | `/api/library` | List downloaded audio files |
-| `GET` | `/api/stream/<path:filename>` | Stream a local audio file |
-| `GET` | `/api/download_file/<path:filename>` | Download a local file to the browser |
-| `POST` | `/api/delete_file` | Delete a local library file |
+| `POST` | `/api/search` | Search by `query` and `type` (`track`, `artist`, `album`, or `genre`) |
+| `GET` | `/api/album/<browse_id>` | Return album details and tracks |
+| `POST` | `/api/download` | Start a background download job for `tracks`, `format`, and `quality` |
+| `GET` | `/api/download/status/<job_id>` | Get job state, progress, files, and errors |
+| `GET` | `/api/library` | List files in the local download library |
+| `GET` | `/api/stream/<path:filename>` | Stream a library file |
+| `GET` | `/api/download_file/<path:filename>` | Download a library file as an attachment |
+| `POST` | `/api/delete_file` | Delete a library file using `relative_path` |
+| `POST` | `/api/events` | Record a listening event |
+| `POST` | `/api/likes` | Create or refresh a user's track like |
+| `POST` | `/api/recommendations/retrain` | Train the optional recommendation model |
+| `GET` | `/api/recommendations/<user_id>` | Return recommendations; accepts `?limit=1..50` |
 
-## Notes
+Example search request:
 
-- Downloads are written to `downloads/` by default and are intentionally ignored by Git.
-- The current backend runs Flask with `debug=True` and is intended for local use. Review the configuration before exposing it to a network.
-- You are responsible for complying with YouTube's terms, copyright law, and any applicable local regulations when using the downloader.
+```bash
+curl -X POST http://localhost:5000/api/search \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"Daft Punk","type":"artist"}'
+```
+
+Example download request:
+
+```bash
+curl -X POST http://localhost:5000/api/download \
+  -H 'Content-Type: application/json' \
+  -d '{"tracks":[{"videoId":"VIDEO_ID","title":"Track","artist":"Artist"}],"format":"mp3","quality":"320"}'
+```
+
+## Recommendations
+
+Listening events and likes are stored in SQLite. The service works without additional packages by returning popular unseen tracks. To enable ALS training, install the optional dependencies and then call the retrain endpoint:
+
+```bash
+pip install -r requirements-recommendations.txt
+curl -X POST http://localhost:5000/api/recommendations/retrain
+```
+
+The service reads these optional environment variables:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OHMWAVE_DB` | `ohmwave.db` | SQLite database path for events and likes |
+| `OHMWAVE_MODEL` | `models/als_latest.pkl` | Location of the serialized ALS model |
+| `VITE_API_URL` | empty (same origin) | Base URL embedded in the Vite client for API requests |
+
+`ohmwave.db`, generated downloads, frontend build output, and local environment files are ignored by Git.
+
+## Local-use and security notes
+
+- The development server listens on `0.0.0.0:5000` with Flask debug mode enabled.
+- The API uses permissive CORS to support the mobile client and has no authentication or authorization.
+- Download jobs are held in application memory, so they do not survive a server restart.
+- Do not expose this server directly to the public internet without adding authentication, restrictive CORS, production server configuration, and a review of file-serving endpoints.
 
 ## License
 
-No license has been declared for this project yet.
+No license has been declared for this project.
