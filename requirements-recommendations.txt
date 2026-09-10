@@ -1,0 +1,4 @@
+# Optional production recommender dependencies. The app uses a popular-track
+# fallback when these are unavailable (useful for local development).
+scipy>=1.11
+implicit>=0.7

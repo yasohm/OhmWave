@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Play, Download, Trash2, Search, RefreshCw, Folder, Music, HardDrive, FileAudio, AlertCircle } from 'lucide-react';
+import { apiUrl } from '../lib/api';
 
 export default function LibraryView({
     libraryFiles = [],
@@ -170,7 +171,7 @@ export default function LibraryView({
                                             <td className="py-3 px-4 text-right">
                                                 <div className="flex items-center justify-end gap-1.5">
                                                     <a
-                                                        href={`/api/download_file/${file.relative_path}`}
+                                                        href={apiUrl(`/api/download_file/${file.relative_path}`)}
                                                         download
                                                         title="Download to computer"
                                                         className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors"

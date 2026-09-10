@@ -6,6 +6,7 @@ import TrackTable from './components/TrackTable';
 import LibraryView from './components/LibraryView';
 import DownloadModal from './components/DownloadModal';
 import AudioPlayer from './components/AudioPlayer';
+import { apiFetch, apiUrl } from './lib/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('search');
@@ -39,7 +40,7 @@ export default function App() {
 
   const triggerBrowserFileSave = (relativePath) => {
     const link = document.createElement('a');
-    link.href = `/api/download_file/${encodeURI(relativePath)}`;
+    link.href = apiUrl(`/api/download_file/${encodeURI(relativePath)}`);
     link.download = '';
     document.body.appendChild(link);
     link.click();
@@ -55,7 +56,7 @@ export default function App() {
     if (downloadJobId) {
       pollIntervalRef.current = setInterval(async () => {
         try {
-          const res = await fetch(`/api/download/status/${downloadJobId}`);
+          const res = await apiFetch(`/api/download/status/${downloadJobId}`);
           if (res.ok) {
             const statusData = await res.json();
             setDownloadJobStatus(statusData);
@@ -89,7 +90,7 @@ export default function App() {
 
   const fetchLibrary = async () => {
     try {
-      const res = await fetch('/api/library');
+      const res = await apiFetch('/api/library');
       if (res.ok) {
         const data = await res.json();
         setLibraryFiles(data.files || []);
@@ -105,7 +106,7 @@ export default function App() {
     setActiveTab('search');
 
     try {
-      const res = await fetch('/api/search', {
+      const res = await apiFetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: query.trim(), type: category })
@@ -194,7 +195,7 @@ export default function App() {
 
     autoDownloadedPathsRef.current.clear();
     try {
-      const res = await fetch('/api/download', {
+      const res = await apiFetch('/api/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -217,7 +218,7 @@ export default function App() {
   const handleDownloadSingle = async (track) => {
     autoDownloadedPathsRef.current.clear();
     try {
-      const res = await fetch('/api/download', {
+      const res = await apiFetch('/api/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -249,7 +250,7 @@ export default function App() {
 
   const handleDeleteFile = async (relative_path) => {
     try {
-      const res = await fetch('/api/delete_file', {
+      const res = await apiFetch('/api/delete_file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ relative_path })
@@ -269,8 +270,8 @@ export default function App() {
     );
 
     const streamUrl = matchingLib
-      ? `/api/stream/${matchingLib.relative_path}`
-      : `/api/stream/${track.artist}/${track.title}.${audioFormat}`;
+      ? apiUrl(`/api/stream/${matchingLib.relative_path}`)
+      : apiUrl(`/api/stream/${track.artist}/${track.title}.${audioFormat}`);
 
     setCurrentTrack({
       title: track.title,
@@ -286,7 +287,7 @@ export default function App() {
       title: file.title,
       artist: file.artist,
       cover: null,
-      streamUrl: `/api/stream/${file.relative_path}`
+      streamUrl: apiUrl(`/api/stream/${file.relative_path}`)
     });
     setIsPlaying(true);
   };
@@ -294,7 +295,7 @@ export default function App() {
   const handleNextTrack = () => {
     if (!currentTrack) return;
     if (activeTab === 'library' && libraryFiles.length > 0) {
-      const idx = libraryFiles.findIndex((f) => `/api/stream/${f.relative_path}` === currentTrack.streamUrl);
+      const idx = libraryFiles.findIndex((f) => apiUrl(`/api/stream/${f.relative_path}`) === currentTrack.streamUrl);
       if (idx !== -1 && idx < libraryFiles.length - 1) {
         handlePlayLibraryFile(libraryFiles[idx + 1]);
       }
@@ -309,7 +310,7 @@ export default function App() {
   const handlePrevTrack = () => {
     if (!currentTrack) return;
     if (activeTab === 'library' && libraryFiles.length > 0) {
-      const idx = libraryFiles.findIndex((f) => `/api/stream/${f.relative_path}` === currentTrack.streamUrl);
+      const idx = libraryFiles.findIndex((f) => apiUrl(`/api/stream/${f.relative_path}`) === currentTrack.streamUrl);
       if (idx > 0) {
         handlePlayLibraryFile(libraryFiles[idx - 1]);
       }
@@ -379,7 +380,7 @@ export default function App() {
               onRefresh={fetchLibrary}
               onPlayFile={handlePlayLibraryFile}
               onDeleteFile={handleDeleteFile}
-              currentPlayingPath={currentTrack?.streamUrl?.replace('/api/stream/', '')}
+              currentPlayingPath={currentTrack?.streamUrl?.replace(apiUrl('/api/stream/'), '')}
               isPlaying={isPlaying}
             />
           )}

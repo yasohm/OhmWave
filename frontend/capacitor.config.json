@@ -1,0 +1,6 @@
+{
+  "appId": "com.ohmwave.music",
+  "appName": "OhmWave",
+  "webDir": "dist",
+  "server": { "cleartext": true }
+}

@@ -5,11 +5,49 @@ import threading
 import time
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 from yt_music_scraper import YTMusicScraper
+from recommendation_service import RecommendationService
 
 app = Flask(__name__)
+
+@app.after_request
+def add_mobile_cors_headers(response):
+    # Capacitor serves the UI from capacitor://localhost on native devices.
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
 scraper = YTMusicScraper(download_dir="downloads")
+recommendations = RecommendationService()
 
 download_jobs = {}
+
+@app.route("/api/events", methods=["POST"])
+def record_listening_event():
+    try:
+        recommendations.record_event(request.get_json() or {})
+        return jsonify({"success": True}), 201
+    except (TypeError, ValueError) as exc:
+        return jsonify({"success": False, "error": {"code": "VALIDATION_ERROR", "message": str(exc)}}), 400
+
+@app.route("/api/likes", methods=["POST"])
+def save_user_like():
+    try:
+        recommendations.set_like(request.get_json() or {})
+        return jsonify({"success": True}), 201
+    except (TypeError, ValueError) as exc:
+        return jsonify({"success": False, "error": {"code": "VALIDATION_ERROR", "message": str(exc)}}), 400
+
+@app.route("/api/recommendations/retrain", methods=["POST"])
+def retrain_recommendations():
+    return jsonify(recommendations.retrain())
+
+@app.route("/api/recommendations/<user_id>", methods=["GET"])
+def get_recommendations(user_id):
+    try:
+        limit = request.args.get("limit", 20, type=int)
+        return jsonify({"user_id": user_id, "recommendations": recommendations.recommend(user_id, limit)})
+    except (TypeError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 400
 
 @app.route("/")
 def index():

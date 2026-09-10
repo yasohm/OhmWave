@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, CheckCircle2, AlertCircle, Loader2, Music, Download, HardDrive, Smartphone } from 'lucide-react';
+import { apiUrl } from '../lib/api';
 
 export default function DownloadModal({
     jobStatus,
@@ -25,7 +26,7 @@ export default function DownloadModal({
 
     const triggerSingleDownload = (relativePath) => {
         const link = document.createElement('a');
-        link.href = `/api/download_file/${encodeURI(relativePath)}`;
+        link.href = apiUrl(`/api/download_file/${encodeURI(relativePath)}`);
         link.download = '';
         document.body.appendChild(link);
         link.click();

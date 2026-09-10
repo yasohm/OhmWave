@@ -54,3 +54,7 @@ Thumbs.db
 htmlcov/
 .tox/
 .nox/
+
+AGENTS.md
+.Agent/
+AGENTS/
